@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <title>Login</title>
+    <!-- Bootstrap core CSS -->
+	<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+	<script src="jquery-3.4.1.min.js"></script>	
+    <!-- Custom styles for this template -->
+    <link href="signin.css" rel="stylesheet">
+  </head>
+  <body class="text-center">
+	<script>
+		if(!sessionStorage.getItem("token")){
+            $('<form/>', {"class": 'form-signin',"id":"login-form"}).appendTo(document.body);
+			$('<h1/>', {"class": 'h3 mb-3 font-weight-normal',text:"Please sign in"}).appendTo("#login-form");
+			$('<label/>', {"for":"username","class": 'sr-only',text:"User Name"}).appendTo("#login-form");
+			$('<input/>', {"id":"username","name":"username","class": 'form-control',"placeholder":"User Name","type":"text","required":"required","autofocus":"autofocus"}).appendTo("#login-form");
+			$('<label/>', {"for":"inputPassword","class": 'sr-only',text:"Passworde"}).appendTo("#login-form");
+			$('<input/>', {"id":"password","name":"password","class": 'form-control',"placeholder":"Password","type":"password","required":"required"}).appendTo("#login-form");
+			$('<button/>', {"class": 'btn btn-lg btn-primary btn-block', text: "Login",
+				click: function(e){
+					e.preventDefault();					
+					var data = getFormData($("#login-form")); 					
+					nPost("https://localhost:5001/api/security/login",data,"json",function(token){
+						alert(token)
+						sessionStorage.setItem("token", token);
+					});
+				}
+			}).appendTo("#login-form");
+        }
+		
+		function getFormData($form){
+			var unindexed_array = $form.serializeArray();
+			var indexed_array = {};
+
+			$.map(unindexed_array, function(n, i){
+				indexed_array[n['name']] = n['value'];
+			});
+
+			return JSON.stringify(indexed_array);
+		}
+		
+		function post(url,data, dataType,callback){
+		
+			$.ajax({
+			  url:url,
+			  type: "POST",	
+			  dataType:dataType,
+			  contentType : 'application/json',
+			  crossDomain: false,
+			  crossOrigin: false
+			});
+		}
+		
+		function nPost(url,data, dataType,callback) {
+		  var xmlhttp = new XMLHttpRequest();
+		  xmlhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+			  callback(this);
+			}
+		  };
+		  xmlhttp.open("POST", url, true);
+		  xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		  xmlhttp.send(data);
+		}
+		
+		
+	</script>
+</body>
+</html>
